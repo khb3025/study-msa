@@ -1,5 +1,8 @@
 package com.example.userservice.service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 
 import com.example.userservice.domain.User;
@@ -37,5 +40,15 @@ public class UserService {
             user.getEmail(),
             user.getName()
         );
+    }
+
+    public List<UserResponseDto> getUsersByIds(List<Long> ids) {
+        List<User> users = this.userRepository.findAllById(ids);
+        return users.stream()
+            .map(user -> new UserResponseDto(
+                user.getUserId(),
+                user.getEmail(),
+                user.getName()
+            )).toList();
     }
 }

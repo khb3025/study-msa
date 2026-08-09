@@ -7,11 +7,15 @@ import com.example.userservice.dto.SignUpRequestDto;
 import com.example.userservice.dto.UserResponseDto;
 import com.example.userservice.service.UserService;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -36,4 +40,13 @@ public class UserController {
         UserResponseDto userResponseDto = userService.getUser(userId);
         return ResponseEntity.ok(userResponseDto);
     }
+
+    @GetMapping
+    public ResponseEntity<List<UserResponseDto>> getUsersByIds(
+        @RequestParam(name="ids") List<Long> ids
+    ) {
+        List<UserResponseDto> userResponseDtos = userService.getUsersByIds(ids);
+        return ResponseEntity.ok(userResponseDtos);
+    }
+    
 }
