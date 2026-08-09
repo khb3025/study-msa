@@ -1,5 +1,7 @@
 package com.example.boardservice.Service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.example.boardservice.client.UserClient;
@@ -38,13 +40,18 @@ public class BoardService {
             .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을수 없습니다."));
         
         // user-service로 부터 사용자 정보 불러오기
-        UserResponseDto userResponseDto = userClient.findById(board.getUserId());
-        // 응답값 조합하기
-        UserDto userDto = new UserDto(
-            userResponseDto.getUserId(),
-            userResponseDto.getName()
-        );
+        Optional<UserResponseDto> optionalUserResponseDto = userClient.findById(board.getUserId());
         
+        UserDto userDto = null;
+        if (optionalUserResponseDto.isPresent()) {
+            UserResponseDto userResponseDto = optionalUserResponseDto.get();
+            // 응답값 조합하기
+            userDto = new UserDto(
+                userResponseDto.getUserId(),
+                userResponseDto.getName()
+            );
+        }
+
         return new BoardResponseDto(
             board.getBoardId(),
             board.getTitle(),
