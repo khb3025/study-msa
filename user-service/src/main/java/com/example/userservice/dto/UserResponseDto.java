@@ -27,7 +27,4 @@ public class UserResponseDto {
     public String getName() {
         return name;
     }
-
-    
-
 }
