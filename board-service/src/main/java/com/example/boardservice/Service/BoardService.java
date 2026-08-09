@@ -1,6 +1,9 @@
 package com.example.boardservice.Service;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -40,7 +43,7 @@ public class BoardService {
             .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을수 없습니다."));
         
         // user-service로 부터 사용자 정보 불러오기
-        Optional<UserResponseDto> optionalUserResponseDto = userClient.findById(board.getUserId());
+        Optional<UserResponseDto> optionalUserResponseDto = userClient.fetchUser(board.getUserId());
         
         UserDto userDto = null;
         if (optionalUserResponseDto.isPresent()) {
@@ -58,5 +61,34 @@ public class BoardService {
             board.getContent(),
             userDto
         );
+
+    }
+
+    public List<BoardResponseDto> getBoards() {
+        List<Board> boards = boardRepository.findAll();
+        List<Long> userIds = boards.stream()
+            .map(Board::getUserId)
+            .distinct()
+            .toList();
+        List<UserResponseDto> userResponseDtos = userClient.fetchUsersByIds(userIds);
+        
+        // userId를 Key로 하는 Map 생성
+        Map<Long, UserDto> userMap = userResponseDtos.stream()
+            .collect(Collectors.toMap(
+                UserResponseDto::getUserId,
+                userResponseDto -> new UserDto(
+                    userResponseDto.getUserId(),
+                    userResponseDto.getName()
+                )
+            ));
+        
+        return boards.stream()
+            .map(board -> new BoardResponseDto(
+                board.getBoardId(),
+                board.getTitle(),
+                board.getContent(),
+                userMap.get(board.getUserId())
+            ))
+            .toList();
     }
 }

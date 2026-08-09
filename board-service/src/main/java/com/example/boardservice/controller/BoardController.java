@@ -7,11 +7,15 @@ import com.example.boardservice.Service.BoardService;
 import com.example.boardservice.dto.BoardResponseDto;
 import com.example.boardservice.dto.CreateBoardRequestDto;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 @RestController
@@ -36,4 +40,11 @@ public class BoardController {
         BoardResponseDto boardResponseDto = boardService.getBoard(boardId);
         return ResponseEntity.ok(boardResponseDto);
     }
+
+    @GetMapping
+    public ResponseEntity<List<BoardResponseDto>> getBoards() {
+        List<BoardResponseDto> boardResponseDtos = boardService.getBoards();
+        return ResponseEntity.ok(boardResponseDtos); // Placeholder - replace with actual implementation
+    }
+    
 }
