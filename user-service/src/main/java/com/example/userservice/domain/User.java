@@ -14,8 +14,13 @@ public class User {
     private String email;
     private String name;
     private String password;
+    private int activeScore = 0;
 
     public User() {
+    }
+
+    public int getActiveScore() {
+        return activeScore;
     }
 
     public User(String email, String name, String password) {
@@ -40,4 +45,8 @@ public class User {
         return password;
     }
     
+    // 활동 점수 적립
+    public void addActivityScore(int activeScore){
+        this.activeScore += activeScore;
+    }
 }

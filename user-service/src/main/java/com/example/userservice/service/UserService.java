@@ -1,6 +1,7 @@
 package com.example.userservice.service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.example.userservice.client.PointClient;
 import com.example.userservice.domain.User;
 import com.example.userservice.domain.UserRepository;
+import com.example.userservice.dto.AddActivityScoreRequestDto;
 import com.example.userservice.dto.SignUpRequestDto;
 import com.example.userservice.dto.UserResponseDto;
 
@@ -55,6 +57,17 @@ public class UserService {
                 user.getEmail(),
                 user.getName()
             )).toList();
+    }
+    @Transactional
+    public void addActivityScore(
+        AddActivityScoreRequestDto addActivityScoreRequestDto
+    ){
+        User user = userRepository.findById(
+            addActivityScoreRequestDto.getUserId()
+        ).orElseThrow(() -> new IllegalArgumentException("사용자를 찾을수 없습니다."));
+
+        user.addActivityScore(addActivityScoreRequestDto.getScore());
+        userRepository.save(user);
     }
 
 }
