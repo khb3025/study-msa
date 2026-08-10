@@ -6,11 +6,13 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestClientException;
 
+import com.example.boardservice.dto.AddActivityScoreRequestDto;
 import com.example.boardservice.dto.UserResponseDto;
 
 @Component
@@ -56,5 +58,17 @@ public class UserClient {
             // log.error("사용자 정보 조회 실패");
             return Collections.emptyList();
         }
+    }
+
+    public void addActivityScore(Long userId, int score){
+        AddActivityScoreRequestDto addActivityScoreRequestDto =
+            new AddActivityScoreRequestDto(userId, score);
+        
+        restClient.post()
+            .uri("/users/activity-score/add")
+            .contentType(MediaType.APPLICATION_JSON)
+            .body(addActivityScoreRequestDto)
+            .retrieve()
+            .toBodilessEntity();
     }
 }

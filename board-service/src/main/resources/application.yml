@@ -19,3 +19,5 @@ spring:
 client:
     user-service:
         url: http://localhost:8080
+    point-service:
+        url: http://localhost:8082

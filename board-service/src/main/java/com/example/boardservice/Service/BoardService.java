@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.example.boardservice.client.PointClient;
 import com.example.boardservice.client.UserClient;
 import com.example.boardservice.domain.Board;
 import com.example.boardservice.domain.BoardRepository;
@@ -22,20 +23,34 @@ public class BoardService {
     
     private final BoardRepository boardRepository;
     private final UserClient userClient;
-    
-    public BoardService(BoardRepository boardRepository, UserClient userClient) {
+    private final PointClient pointClient;
+
+    public BoardService(
+        BoardRepository boardRepository,
+        UserClient userClient,
+        PointClient pointClient
+    ) {
         this.boardRepository = boardRepository;
         this.userClient = userClient;
+        this.pointClient = pointClient;
     }
 
     @Transactional
     public void create(CreateBoardRequestDto createBoardRequestDto) {
+
+        // 포인트 차감 100 포인트
+        pointClient.deductPoints(createBoardRequestDto.getUserId(), 100);
+
+        // 게시글 작성
         Board board = new Board(
             createBoardRequestDto.getTitle(),
             createBoardRequestDto.getContent(),
             createBoardRequestDto.getUserId()
         );
         boardRepository.save(board);
+
+        // 활동점수 적립 활동점수 10점 부여
+        userClient.addActivityScore(createBoardRequestDto.getUserId(), 10);
     }
 
     public BoardResponseDto getBoard(Long boardId) {
@@ -91,4 +106,5 @@ public class BoardService {
             ))
             .toList();
     }
+
 }

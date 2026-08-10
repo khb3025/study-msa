@@ -11,14 +11,14 @@ public class Point {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pointId;
     private Long userId;
-    private int getAmount;
+    private int amount;
     
     public Point() {
     }
 
     public Point(Long userId, int getAmount) {
         this.userId = userId;
-        this.getAmount = getAmount;
+        this.amount = getAmount;
     }
 
     public Long getPointId() {
@@ -29,15 +29,15 @@ public class Point {
         return userId;
     }
 
-    public int getGetAmount() {
-        return getAmount;
+    public int getAmount() {
+        return amount;
     }
 
     public void addAmount(int amount) {
-        this.getAmount += amount;
+        this.amount += amount;
     }
 
     public void deductAmount(int amount) {
-        this.getAmount -= amount;
+        this.amount -= amount;
     }
 }
