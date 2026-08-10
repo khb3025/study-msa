@@ -1,13 +1,13 @@
 package com.example.userservice.dto;
 
-public class AddPointRequestwDto {
+public class AddPointRequestDto {
     private Long userId;
     private int amount;
 
-    public AddPointRequestwDto() {
+    public AddPointRequestDto() {
     }
     
-    public AddPointRequestwDto(Long userId, int amount) {
+    public AddPointRequestDto(Long userId, int amount) {
         this.userId = userId;
         this.amount = amount;
     }

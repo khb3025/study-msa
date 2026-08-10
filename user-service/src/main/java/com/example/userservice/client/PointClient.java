@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.util.UriBuilder;
 
-import com.example.userservice.dto.AddPointRequestwDto;
+import com.example.userservice.dto.AddPointRequestDto;
 
 import ch.qos.logback.core.util.ContentTypeUtil;
 
@@ -22,8 +22,8 @@ public class PointClient {
     }
 
     public void addPoints(Long userId, int point){
-        AddPointRequestwDto addPointRequestwDto =
-            new AddPointRequestwDto(
+        AddPointRequestDto addPointRequestwDto =
+            new AddPointRequestDto(
                 userId,
                 point
             );
