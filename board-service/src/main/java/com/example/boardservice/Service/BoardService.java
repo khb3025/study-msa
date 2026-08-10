@@ -35,22 +35,58 @@ public class BoardService {
         this.pointClient = pointClient;
     }
 
-    @Transactional
+    
     public void create(CreateBoardRequestDto createBoardRequestDto) {
+        // 게시글 저장을 성공했는지 판단하는 플래그
+        boolean isBoardCreated = false;
+        Long savedBoardId = null;
 
-        // 포인트 차감 100 포인트
-        pointClient.deductPoints(createBoardRequestDto.getUserId(), 100);
+        // 포인트 차감을 성공했는지 판단하는 플래그
+        boolean isPointDeducted = false;
+        try{
+            // 포인트 차감 100 포인트
+            pointClient.deductPoints(createBoardRequestDto.getUserId(), 100);
+            System.out.println("포인트 차감 성공");
+            isPointDeducted = true;
 
-        // 게시글 작성
-        Board board = new Board(
-            createBoardRequestDto.getTitle(),
-            createBoardRequestDto.getContent(),
-            createBoardRequestDto.getUserId()
-        );
-        boardRepository.save(board);
+            // 게시글 작성
+            Board savedBoard = new Board(
+                createBoardRequestDto.getTitle(),
+                createBoardRequestDto.getContent(),
+                createBoardRequestDto.getUserId()
+            );
+            boardRepository.save(savedBoard);
+            savedBoardId = savedBoard.getBoardId();
+            isBoardCreated = true; //게시글 저장 성공 플래그
+            System.out.println("게시글 작성 성공");
 
-        // 활동점수 적립 활동점수 10점 부여
-        userClient.addActivityScore(createBoardRequestDto.getUserId(), 10);
+            // 활동점수 적립 활동점수 10점 부여
+            userClient.addActivityScore(createBoardRequestDto.getUserId(), 10);
+            System.out.println("포인트 적립 성공");
+        }catch(Exception e){
+            System.out.println("예외 발생");
+            System.out.println("isBoardCreated :" + isBoardCreated);
+            System.out.println("isPointDeducted :" + isPointDeducted);
+            
+            if(isBoardCreated){
+                // 게시글 작성 보상 트랜잭션 => 게시글 삭제
+                boardRepository.deleteById(savedBoardId);
+                System.out.println("[보상 트랜잭션] 게시글 삭제");
+            }
+
+            if(isPointDeducted){
+                // 포인트 차감에 대한 보상 트랜잭션
+                pointClient.addPoints(createBoardRequestDto.getUserId(), 100);
+                System.out.println("[보상 트랜잭션] 포인트 적립");
+            }
+
+            // 실패 응답으로 처리하기 위한 예외 처리기
+            throw e;
+            
+
+        }
+
+        
     }
 
     public BoardResponseDto getBoard(Long boardId) {
