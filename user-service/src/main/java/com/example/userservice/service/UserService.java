@@ -68,6 +68,13 @@ public class UserService {
 
         user.addActivityScore(addActivityScoreRequestDto.getScore());
         userRepository.save(user);
+        /* Eventual Consistency (최종적 일관성 확인 코드)
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        */
     }
 
 }

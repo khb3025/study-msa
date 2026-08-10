@@ -82,11 +82,7 @@ public class BoardService {
 
             // 실패 응답으로 처리하기 위한 예외 처리기
             throw e;
-            
-
         }
-
-        
     }
 
     public BoardResponseDto getBoard(Long boardId) {
