@@ -15,3 +15,7 @@ spring:
         
     application:
         name: user-service
+
+client:
+    point-service:
+        url: http://localhost:8082
