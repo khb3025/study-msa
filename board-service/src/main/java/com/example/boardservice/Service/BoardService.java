@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import com.example.boardservice.client.PointClient;
@@ -15,8 +16,10 @@ import com.example.boardservice.dto.BoardResponseDto;
 import com.example.boardservice.dto.CreateBoardRequestDto;
 import com.example.boardservice.dto.UserDto;
 import com.example.boardservice.dto.UserResponseDto;
+import com.example.boardservice.event.BoardCreatedEvent;
 
-import jakarta.transaction.Transactional;
+import tools.jackson.core.JacksonException;
+import tools.jackson.databind.ObjectMapper;
 
 @Service
 public class BoardService {
@@ -24,15 +27,18 @@ public class BoardService {
     private final BoardRepository boardRepository;
     private final UserClient userClient;
     private final PointClient pointClient;
+    private final KafkaTemplate<String, String> kafkaTemplate;
 
     public BoardService(
         BoardRepository boardRepository,
         UserClient userClient,
-        PointClient pointClient
+        PointClient pointClient,
+        KafkaTemplate<String, String> kafkaTemplate
     ) {
         this.boardRepository = boardRepository;
         this.userClient = userClient;
         this.pointClient = pointClient;
+        this.kafkaTemplate = kafkaTemplate;
     }
 
     
@@ -60,9 +66,16 @@ public class BoardService {
             isBoardCreated = true; //게시글 저장 성공 플래그
             System.out.println("게시글 작성 성공");
 
-            // 활동점수 적립 활동점수 10점 부여
-            userClient.addActivityScore(createBoardRequestDto.getUserId(), 10);
-            System.out.println("포인트 적립 성공");
+            
+            // 활동점수 적립 활동점수 10점 부여 -> Kafka 이벤트로 전환
+            // userClient.addActivityScore(createBoardRequestDto.getUserId(), 10);
+            // System.out.println("포인트 적립 성공");
+            
+            BoardCreatedEvent boardCreatedEvent =
+                new BoardCreatedEvent(createBoardRequestDto.getUserId());
+            this.kafkaTemplate.send("board-created", this.toJsonString(boardCreatedEvent));
+            System.out.println("게시글 작성 완료 이벤트 발행");
+
         }catch(Exception e){
             System.out.println("예외 발생");
             System.out.println("isBoardCreated :" + isBoardCreated);
@@ -82,6 +95,17 @@ public class BoardService {
 
             // 실패 응답으로 처리하기 위한 예외 처리기
             throw e;
+        }
+    }
+
+
+    public String toJsonString(Object object) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(object);
+        } catch (JacksonException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Json 직렬화 실패");
         }
     }
 
@@ -138,5 +162,5 @@ public class BoardService {
             ))
             .toList();
     }
-
+    
 }
