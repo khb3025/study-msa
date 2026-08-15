@@ -16,6 +16,13 @@ spring:
     application:
         name: user-service
 
+    kafka:
+        bootstrap-servers: localhost:9092
+        consumer:
+            auto-offset-reset: earliest
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
 client:
     point-service:
         url: http://localhost:8082
