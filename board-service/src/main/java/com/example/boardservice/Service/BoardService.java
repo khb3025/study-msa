@@ -163,4 +163,38 @@ public class BoardService {
             .toList();
     }
     
+
+    // 연관관계를 활용한 특정 게시글 조회
+    public BoardResponseDto getBoard2(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+            .orElseThrow(() -> new IllegalArgumentException("게시글을 찾을 수 없습니다."));
+        
+        BoardResponseDto boardResponseDto = new BoardResponseDto(
+            board.getBoardId(),
+            board.getTitle(),
+            board.getContent(),
+            new UserDto(
+                board.getUser().getUserId(),
+                board.getUser().getName()
+            )
+        );
+        return boardResponseDto;
+    }
+
+    //연관관계를 활용한 게시글 전체 조회
+    public List<BoardResponseDto> getBoards2() {
+        List<Board> boards = boardRepository.findAll();
+        return boards.stream().map( board ->{
+            BoardResponseDto boardResponseDto = new BoardResponseDto(
+                board.getBoardId(),
+                board.getTitle(),
+                board.getContent(),
+                new UserDto(
+                    board.getUser().getUserId(),
+                    board.getUser().getName()
+                )
+            );
+            return boardResponseDto;
+        }).toList();
+    }
 }

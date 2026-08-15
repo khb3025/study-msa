@@ -20,7 +20,10 @@ spring:
             value-serializer: org.apache.kafka.common.serialization.StringSerializer
             # properties:
             #     patitioner.class: org.apache.kafka.clients.producer.RoundRobinPartitioner
-
+        consumer:
+            key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+            
     application:
         name: board-service
 
