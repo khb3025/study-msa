@@ -29,3 +29,6 @@ spring:
 client:
     point-service:
         url: http://localhost:8082
+
+jwt:
+    secret: jwt-secret-key-1423-1126-7541-3217

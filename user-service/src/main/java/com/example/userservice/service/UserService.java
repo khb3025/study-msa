@@ -1,9 +1,13 @@
 package com.example.userservice.service;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.crypto.SecretKey;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +15,14 @@ import com.example.userservice.client.PointClient;
 import com.example.userservice.domain.User;
 import com.example.userservice.domain.UserRepository;
 import com.example.userservice.dto.AddActivityScoreRequestDto;
+import com.example.userservice.dto.LoginRequestDto;
+import com.example.userservice.dto.LoginResponseDto;
 import com.example.userservice.dto.SignUpRequestDto;
 import com.example.userservice.dto.UserResponseDto;
 import com.example.userservice.event.UserSignedUpEvent;
 
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jakarta.transaction.Transactional;
 import tools.jackson.core.JacksonException;
 import tools.jackson.databind.ObjectMapper;
@@ -24,14 +32,17 @@ public class UserService {
     private final UserRepository userRepository;
     private final PointClient pointClient;
     private final KafkaTemplate<String, String> kafkaTemplate;
+    private final String jwtSecret;
     public UserService(
         UserRepository userRepository,
         PointClient pointClient,
-        KafkaTemplate<String, String> kafkaTemplate
+        KafkaTemplate<String, String> kafkaTemplate,
+        @Value("${jwt.secret}") String jwtSecret
     ) {
         this.userRepository = userRepository;
         this.pointClient = pointClient;
         this.kafkaTemplate = kafkaTemplate;
+        this.jwtSecret = jwtSecret;
     }
 
     @Transactional
@@ -104,6 +115,26 @@ public class UserService {
             e.printStackTrace();
             throw new RuntimeException("JSON 직렬화 살패 ");
         }
+    }
+
+    public LoginResponseDto login(LoginRequestDto loginRequestDto) {
+        User user = userRepository.findByEmail(loginRequestDto.getEmail())
+            .orElseThrow(() -> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+        if(!user.getPassword().equals(loginRequestDto.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+        }
+
+        // JWT를 만들때 사용하는 Key 생성 (공식 문서 방식)
+        SecretKey secretKey = Keys.hmacShaKeyFor(
+            jwtSecret.getBytes(StandardCharsets.UTF_8)
+        );
+        // JWT 토큰 만들기
+        String token = Jwts.builder()
+            .subject(user.getUserId().toString())
+            .signWith(secretKey)
+            .compact();
+
+        return new LoginResponseDto(token);
     }
 
 }

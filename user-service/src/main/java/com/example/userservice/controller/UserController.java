@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.userservice.dto.AddActivityScoreRequestDto;
+import com.example.userservice.dto.LoginRequestDto;
+import com.example.userservice.dto.LoginResponseDto;
 import com.example.userservice.dto.SignUpRequestDto;
 import com.example.userservice.dto.UserResponseDto;
 import com.example.userservice.service.UserService;
@@ -36,4 +38,12 @@ public class UserController {
         return ResponseEntity.noContent().build();
     }
     
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponseDto> login(
+        @RequestBody LoginRequestDto loginRequestDto
+    ){
+        LoginResponseDto loginResponseDto =
+            userService.login(loginRequestDto);
+        return ResponseEntity.ok(loginResponseDto);
+    }
 }
