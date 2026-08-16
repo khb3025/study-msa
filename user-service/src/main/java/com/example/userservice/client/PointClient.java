@@ -29,7 +29,7 @@ public class PointClient {
             );
 
         restClient.post()
-            .uri("/points/add")
+            .uri("/internal/points/add")
             .contentType(MediaType.APPLICATION_JSON)
             .body(addPointRequestwDto)
             .retrieve()

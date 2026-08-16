@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/api/users")
 public class UserController {
     private final UserService userService;
 
@@ -33,28 +33,6 @@ public class UserController {
         @RequestBody SignUpRequestDto signUpRequestDto
     ){
         userService.signUp(signUpRequestDto);
-        return ResponseEntity.noContent().build();
-    }
-    
-    @GetMapping("/{userId}")
-    public ResponseEntity<UserResponseDto> getUser(@PathVariable("userId") Long userId) {
-        UserResponseDto userResponseDto = userService.getUser(userId);
-        return ResponseEntity.ok(userResponseDto);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<UserResponseDto>> getUsersByIds(
-        @RequestParam(name="ids") List<Long> ids
-    ) {
-        List<UserResponseDto> userResponseDtos = userService.getUsersByIds(ids);
-        return ResponseEntity.ok(userResponseDtos);
-    }
-    
-    @PostMapping("/activity-score/add")
-    public ResponseEntity<Void> addActivityScore(
-        @RequestBody AddActivityScoreRequestDto addActivityScoreRequestDto
-    ) {
-        userService.addActivityScore(addActivityScoreRequestDto);
         return ResponseEntity.noContent().build();
     }
     
