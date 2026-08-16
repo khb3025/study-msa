@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
 
@@ -29,9 +30,11 @@ public class BoardController {
 
     @PostMapping
     public ResponseEntity<Void> createBoard(
-        @RequestBody CreateBoardRequestDto createBoardRequestDto
+        @RequestBody CreateBoardRequestDto createBoardRequestDto,
+        @RequestHeader("X-User-Id") Long userId
+
     ) {
-        boardService.create(createBoardRequestDto);
+        boardService.create(createBoardRequestDto, userId);
         return ResponseEntity.noContent().build();
     }
 

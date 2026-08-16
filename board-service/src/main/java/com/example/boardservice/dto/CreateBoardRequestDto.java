@@ -3,15 +3,13 @@ package com.example.boardservice.dto;
 public class CreateBoardRequestDto {
     private String title;
     private String content;
-    private Long userId;
-
+    
     public CreateBoardRequestDto() {
     }
 
-    public CreateBoardRequestDto(String title, String content, Long userId) {
+    public CreateBoardRequestDto(String title, String content) {
         this.title = title;
         this.content = content;
-        this.userId = userId;
     }
 
     public String getTitle() {
@@ -22,7 +20,5 @@ public class CreateBoardRequestDto {
         return content;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
+    
 }
